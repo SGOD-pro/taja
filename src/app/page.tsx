@@ -1,61 +1,73 @@
 "use client";
+import { mainImage } from "@/constants";
+import React, { useEffect } from "react";
+import Footer from "./components/layout/Footer";
+import LocomotiveScroll from "locomotive-scroll";
+import Displayitems from "./components/Displayitems";
+import TajaWatermark from "./components/TajaWatermark";
+import TitleText from "./components/TitleText";
+import DisplayImage from "./components/DisplayImage";
 import Image from "next/image";
-import Section1 from "./components/Section1";
-import { motion } from "framer-motion";
-import { useRef } from "react";
-import { useInView } from "framer-motion";
 
-// List of images
-const images = ["/file.png", "/file2.png", "/file3.png", "/file4.png"];
-
-export default function Home() {
-	// Define animation variants for the fade-in effect
-	const imageVariants = {
-		hidden: { opacity: 0, scale: 0.95,y:50 },
-		visible: { opacity: 1, scale: 1,y:0, transition: { duration: 0.5, } },
-	};
+function Home() {
+	const selectedImage = mainImage[Math.floor(Math.random() * mainImage.length)];
+	useEffect(() => {
+		const loco = new LocomotiveScroll();
+		return () => {
+			loco.destroy();
+		};
+	}, []);
 
 	return (
-		<main className="relative">
-			<Section1 />
-			<section className="w-full p-3 bg-zinc-300" id="products">
-				<div className="rounded-md h-full w-full bg-neutral-200 text-black pt-14 pb-4">
-					<h1 className="text-5xl font-semibold px-5 py-2">
-						Products{" "}
-						<span className="text-rose-600 text-xs">
-							<sup>*</sup>Only for wholesale
-						</span>
-					</h1>
-					<div className="flex justify-around container m-auto gap-5 flex-wrap">
-						{images.map((image, index) => {
-							// Create a unique ref for each image
-							const ref = useRef(null);
-							// Detect when each image is in view
-							const isInView = useInView(ref, { once: true });
-
-							return (
-								<motion.div
-									key={index}
-									ref={ref}
-									className="min-w-80 w-1/3 border bg-neutral-300 p-2 rounded-md"
-									initial="hidden"
-									animate={isInView ? "visible" : "hidden"}
-									variants={imageVariants}
-									transition={{delay:index*0.1}}
-								>
-									<Image
-										src={image}
-										alt="image"
-										width={500}
-										height={500}
-										className="object-contain w-full"
-									/>
-								</motion.div>
-							);
-						})}
-					</div>
+		<main
+			className="min-h-dvh h-fit  text-white max-w-[100vw] overflow-x-hidden"
+			style={{ backgroundColor: selectedImage.bgColor }}
+		>
+			<Image
+				src={"/taja.png"}
+				height={500}
+				width={500}
+				alt="rr"
+				className="w-8 xl:w-44 h-8 xl:h-44 drop-shadow-lg fixed top-4 left-4 z-50"
+			></Image>
+				<Image
+						src={"/rr_logo.png"}
+						height={100}
+						width={100}
+						alt="rr"
+						className="w-8 xl:w-10 h-8 xl:h-10 drop-shadow-lg fixed top-4 right-4 z-50"
+					></Image>
+			<section className="relative flex items-center justify-between flex-col lg:flex-row lg:p-12 xl:p-20 gap-32 sm:gap-24 h-fit lg:h-dvh lg:gap-0">
+				<TajaWatermark />
+				<TitleText />
+				<DisplayImage selectedImage={selectedImage} />
+				<div className="static lg:absolute bottom-14 left-10 lg:translate-x-[10%] z-20">
+					<Displayitems />
 				</div>
 			</section>
+			<section className="flex pt-44 lg:pt-20 relative items-center lg:flex-row flex-col-reverse gap-5 h-fit ">
+				<div className="w-[90%] md:h-[40dvh] lg:h-[80dvh] lg:w-1/2">
+					<Image
+						src={"/Chira.webp"}
+						alt="Charaimge"
+						width={1000}
+						height={1000}
+						className="w-full h-full object-contain image-shadow"
+					/>
+				</div>
+				<div
+					className="w-full lg:w-fit px-5 lg:px-0"
+					data-scroll
+					data-scroll-speed=".1"
+				>
+					<h2 className="text-3xl md:text-4xl">As Old As Time</h2>
+					<h2 className="text-4xl md:text-5xl">Our Special Chira</h2>
+					<h3 className=" md:text-lg mt-4">At Rs: ₹2</h3>
+				</div>
+			</section>
+			<Footer />
 		</main>
 	);
 }
+
+export default Home;

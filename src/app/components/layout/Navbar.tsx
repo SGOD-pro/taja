@@ -1,85 +1,110 @@
 "use client";
 import Image from "next/image";
-import React, { memo, useEffect, useState } from "react";
-import { Headset } from "lucide-react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { X, AlignRight } from "lucide-react";
+import { Jockey_One } from "next/font/google";
+const jockeyOne = Jockey_One({ subsets: ["latin"], weight: "400" });
 
+const links = [
+	{
+		name: "Home",
+		href: "/",
+	},
+	{
+		name: "About Us",
+		href: "/about-us",
+	},
+	{
+		name: "Contact us",
+		href: "/contact-us",
+	},
+];
 function Navbar() {
 	const pathname = usePathname();
-	const [activeSection, setActiveSection] = useState("");
-
+	const [activeSection, setActiveSection] = useState(false);
+	const div = useRef<HTMLDivElement>(null);
 	useEffect(() => {
-		const homeSection = document.getElementById("home");
-		const productSection = document.getElementById("products");
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						if (entry.target.id === "home") {
-							setActiveSection("#home");
-						} else if (entry.target.id === "products") {
-							setActiveSection("#products");
-						}
-					}
-				});
-			},
-			{
-				root: null, // viewport
-				threshold: 0.5, // 50% of the section must be visible
+		const handleClickOutside = (e: MouseEvent) => {
+			if (
+				!div.current?.contains(e.target as Node) &&
+				e.target !== document.getElementById("trigger-btn")
+			) {
+				setActiveSection(false);
 			}
-		);
+		};
 
-		if (homeSection) observer.observe(homeSection);
-		if (productSection) observer.observe(productSection);
+		document.addEventListener("click", handleClickOutside);
 
-		// Cleanup observer when component unmounts
 		return () => {
-			if (homeSection) observer.unobserve(homeSection);
-			if (productSection) observer.unobserve(productSection);
+			document.removeEventListener("click", handleClickOutside);
 		};
 	}, []);
 
 	return (
-		<header className="flex justify-between items-center absolute top-2 xl:top-3 left-0 w-full z-20 px-8 py-4">
-			<Image
-				src={"/rr_logo.png"}
-				height={100}
-				width={100}
-				alt="rr"
-				className="w-12 xl:w-14 h-12 xl:h-14"
-			></Image>
-			<nav className="w-1/2 flex gap-12 items-center px-4 md:px-6 py-3 bg-white/40 justify-center rounded-full fixed left-1/2 -translate-x-1/2 backdrop-blur-sm">
-				<Link
-					className={`text-black opacity-70 ${
-						pathname === "/" && activeSection === "#home" && "font-bold opacity-100"
-					}`}
-					href={"/"}
-				>
-					Home
-				</Link>
-				<Link
-					className={`text-black opacity-70 ${activeSection === "#products" && "font-bold opacity-100"}`}
-					href={"#products"}
-				>
-					Products
-				</Link>
-				<Link
-					className={`text-black opacity-70 ${pathname === "/about" && "font-bold opacity-100"}`}
-					href={"/about"}
-				>
-					About
-				</Link>
-			</nav>
-			<Link
-				href={"/"}
-				aria-disabled
-				className="bg-white/40 p-3 rounded-full shadow-black shadow-sm text-black"
+		// <nav className="">
+		// 	<header className="flex justify-between items-center fixed top-0 w-full left-1/2 -translate-x-1/2 \ z-50 backdrop-blur-3xl bg-white/40 px-8 py-3 rounded-b-3xl" >
+		// 		<Image
+		// 			src={"/rr_logo.png"}
+		// 			height={100}
+		// 			width={100}
+		// 			alt="rr"
+		// 			className="w-8 xl:w-10 h-8 xl:h-10 drop-shadow-lg filter"
+		// 		></Image>
+		// 		<button
+		// 			className="bg-[#1c1c1c] px-4 py-2 text-white rounded-full"
+		// 			id="trigger-btn"
+		// 			onClick={() => setActiveSection(true)}
+		// 		>
+		// 			<span className="hidden md:block pointer-events-none">Menu</span>
+		// 			<span className="md:hidden pointer-events-none">
+		// 				<AlignRight />
+		// 			</span>
+		// 		</button>
+		// 	</header>
+		// 	<div
+		// 		className={`fixed top-0 right-0 w-svw md:w-96 h-dvh z-[60] backdrop-blur-3xl flex flex-col items-center justify-center ${
+		// 			activeSection ? "translate-x-0" : "translate-x-full"
+		// 		} transition-all`}
+		// 		ref={div}
+		// 	>
+		// 		<button
+		// 			className="absolute right-12 top-10"
+		// 			onClick={() => setActiveSection(false)}
+		// 		>
+		// 			<X size={40} />
+		// 		</button>
+		// 		<ul className="space-y-8 text-5xl">
+		// 			{links.map((link) => (
+		// 				<li key={link.name}>
+		// 					<Link href={`${link.href}`}>{link.name.split(" ")}</Link>
+		// 				</li>
+		// 			))}
+		// 		</ul>
+		// 	</div>
+		// </nav>
+
+		<nav
+			className={`${jockeyOne.className} fixed top-0 left-1/2 -translate-x-1/2 z-50 mt-5`}
+		>
+			<ul
+				className={`text-2xl flex gap-12 ${
+					pathname === "/" ? "text-white" : "text-black"
+				} justify-center`}
 			>
-				<Headset className="w-4 h-4" />
-			</Link>
-		</header>
+				{links.map((link) => (
+					<li key={link.name}>
+						<Link
+							href={`${link.href}`}
+							className={pathname === link.href ? "opacity-100" : "opacity-50"}
+						>
+							{link.name.split(" ")}
+						</Link>
+					</li>
+				))}
+			</ul>
+		</nav>
 	);
 }
 
