@@ -9,7 +9,7 @@ function ContactUs() {
 					Contact Us
 				</h1>
 				<p className="text-gray-600 text-center mb-6">
-					We'd love to hear from you! Please fill out the form below.
+					We{`'`}d love to hear from you! Please fill out the form below.
 				</p>
 				<form
 					className="space-y-4"
